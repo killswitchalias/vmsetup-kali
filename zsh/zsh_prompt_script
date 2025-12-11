@@ -1,0 +1,110 @@
+#!/usr/bin/zsh
+setopt prompt_subst
+RED='%F{red}' # Bold Red
+GREEN='%F{green}' # Bold Green
+BLUE='%F{blue}' # Bold Blue
+YELLOW='%F{yellow}' # Bold Yellow
+PURPLE='%F{magenta}' # Bold Purple
+CYAN='%F{cyan}' # Bold Cyan
+NC='%f' # No Color (reset)
+CROSSMARK="${RED}x${NC}" # UTF-8 crossmark (✗)
+case "$TERM" in
+	xterm-color) color_prompt=yes;;
+esac
+force_color_prompt=yes
+if [ -n "$force_color_prompt" ]; then
+	if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+		color_prompt=yes
+	else
+		color_prompt=
+	fi
+fi
+parse_git_branch() {
+	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+parse_shell_level() {
+	LIMIT=2
+	SHELL_LEVEL_SECTION=""
+	if [[ -v TMUX ]]; then
+SHELL_LEVEL_SECTION="
+├ ${GREEN}Tmux${NC}"
+		LIMIT=$(( LIMIT + 1 ))
+	fi
+	if (( SHLVL >= LIMIT )); then
+SHELL_LEVEL_SECTION="${SHELL_LEVEL_SECTION}
+├ shell lvl: ${SHLVL}"
+	fi
+}
+update_prompt_status() {
+	EXIT_STATUS=$?
+	if (( EXIT_STATUS != 0 )); then
+ERROR_STATUS_INDICATOR="─${CROSSMARK} ${RED}Error status: $EXIT_STATUS${NC}
+├"
+	else
+		ERROR_STATUS_INDICATOR=""
+	fi
+}
+checkWidth() {
+	local T_COLS=$(tput cols)
+	local WIDTH_THRESHOLD=40
+	if (( T_COLS < WIDTH_THRESHOLD )); then
+		PROMPT_WIDTH_SHORT="TRUE"
+	else
+		PROMPT_WIDTH_SHORT="FALSE"
+	fi
+}
+gitStatus() {
+	GIT_BRANCH_STATUS=$(parse_git_branch)
+	if [[ -n "$GIT_BRANCH_STATUS" ]]; then
+		if [[ "$PROMPT_WIDTH_SHORT" == "TRUE" ]]; then
+local PREFIX="
+├ "
+		else
+			local PREFIX=" ── "
+		fi
+		GIT_SECTION="${PREFIX}git ${YELLOW}${GIT_BRANCH_STATUS}${NC}"
+	else
+		GIT_SECTION=""
+	fi
+}
+venvStatus() {
+	if [[ -n "$VIRTUAL_ENV" ]]; then
+		local VENV_NAME=$(basename $VIRTUAL_ENV)
+VENV_SECTION="
+├ venv (${VENV_NAME})"
+	else
+		VENV_SECTION=""
+	fi
+}
+setUserColor() {
+	if (( EUID == 0 )); then
+		TIMECOLOR=$CYAN
+		PWDCOLOR=$CYAN
+		PROMPTCOLOR=$RED
+	else
+		TIMECOLOR=$PURPLE
+		PWDCOLOR=$BLUE
+		PROMPTCOLOR=$BLUE
+	fi
+}
+generatePromptBody() {
+	if [[ "$PROMPT_WIDTH_SHORT" == "TRUE" ]]; then
+PROMPT_BODY="
+├ ${TIMECOLOR}%D{%H:%M:%S}${NC}${GIT_SECTION}${VENV_SECTION}
+├ ${PWDCOLOR}%c${NC}${SHELL_LEVEL_SECTION}"
+	else
+PROMPT_BODY=" ── ${TIMECOLOR}%D{%H:%M:%S}${NC}${GIT_SECTION}${VENV_SECTION}
+├ ${PWDCOLOR}%~${NC}${SHELL_LEVEL_SECTION}"
+	fi
+}
+precmd() {
+	update_prompt_status
+	setUserColor
+	checkWidth
+	parse_shell_level
+	gitStatus
+	venvStatus
+	generatePromptBody
+PROMPT="╭${ERROR_STATUS_INDICATOR}─ ${BLUE}%n${NC}㉿%m${PROMPT_BODY}
+╰─${PROMPTCOLOR}\$${NC} "
+}

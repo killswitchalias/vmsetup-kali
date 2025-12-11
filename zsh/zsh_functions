@@ -1,0 +1,100 @@
+#!/usr/bin/zsh
+
+# Scripts
+
+# Extracts files from compression
+extract() {
+   if [ -f $1 ] ; then
+       case $1 in
+           *.tar.bz2)   tar xvjf $1    ;;
+           *.tar.gz)    tar xvzf $1    ;;
+           *.bz2)       bunzip2 $1     ;;
+           *.rar)       unrar x $1     ;;
+           *.gz)        gunzip $1      ;;
+           *.tar)       tar xvf $1     ;;
+           *.tbz2)      tar xvjf $1    ;;
+           *.tgz)       tar xvzf $1    ;;
+           *.zip)       unzip $1       ;;
+           *.Z)         uncompress $1  ;;
+           *.7z)        7z x $1        ;;
+           *)           echo "don't know how to extract '$1'..." ;;
+       esac
+   else
+       echo "'$1' is not a valid file!"
+   fi
+}
+
+#copy file contents to clipboard
+copy() {
+	xclip -i $1 -selection clipboard
+}
+
+# cd and ls into same dir
+cdls() {
+	cd "$1"
+	ls
+}
+
+# Make dir then cd into it
+mkcd() {
+	mkdir -p "$1"
+	cd "$1"
+}
+
+# Diff-file
+diff-file() {
+	diff -syT "$1" "$2" | less
+}
+
+# Get last file from download
+lastDownload() {
+	mv ~/Downloads/"$(ls -1t ~/Downloads/ | head -n1 | sed 's/\**$//')" "$(pwd)"/.
+}
+
+# Count letters in string
+count() {
+	if [ $# != 1 ]; then
+	        echo "Usage: count <string>"
+	else
+	        echo "$1" > /tmp/count.tmp
+	        countr=`cat /tmp/count.tmp | wc -m`
+	        rm /tmp/count.tmp 2>/dev/null
+	        countr=$(($countr - 1))
+	        echo $countr
+	fi
+}
+
+# Get current SSH sessions
+sshinfo() {
+	 ss -tnp 'sport = :22 or dport = :22' | grep ESTAB | tr ',' ' ' | awk '{print $7" "$4" -> "$5}'
+}
+
+# Change the new default dir
+changedir() {
+	local RCFILE="$HOME/.zshrc"
+    local NEWDIR="$(pwd)"
+    if [ -z "$1" ]; then
+        echo -e "Changing the STARTINGDIR in the $RCFILE to $(pwd)"
+        local NEWDIR="$(pwd)"
+    else
+	    local NEWDIR="$1"
+	fi
+    local ESCAPED_DIR=$(echo "$NEWDIR" | sed 's/\//\\\//g')
+	#currentLine=$(grep STARTINGDIR "$RCFILE" | head -n 1)
+#	sed -i "s/\$currentLine/STARTINGDIR=\"\$ESCAPED_DIR\"/" "$RCFILE"
+
+	# The sed command:
+    # 1. Searches for a line starting with 'STARTINGDIR='
+    # 2. Replaces the entire line with the new definition
+    # The -i flag performs an in-place edit directly on the file.
+    # We use a non-standard delimiter (~) for sed to avoid conflicts with path slashes.
+    sed -i -r "s|^STARTINGDIR=.*|STARTINGDIR=\"${ESCAPED_DIR}\"|g" "$RCFILE"
+
+    if [ $? -eq 0 ]; then
+#        echo "Successfully updated STARTINGDIR $STARTINGDIR in $RCFILE to: STARTINGDIR="'"'"$NEWDIR"'"'
+        # Source the file to apply the change immediately to the current shell environment
+        source "$RCFILE"
+    else
+        echo "Error: Failed to update $RCFILE. Please check the file contents and permissions."
+    fi
+}

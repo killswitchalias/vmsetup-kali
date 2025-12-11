@@ -1,0 +1,36 @@
+#!/user/bin/zsh
+
+# Aliases
+alias aliases='nano ~/.zsh_aliases'
+alias zshrc='nano ~/.zshrc'
+
+alias c='clear'
+alias q='exit'
+alias r='ranger'
+alias o='xdg-open'
+
+alias ..='cd ..'
+alias cd..='cd ..'
+alias cp='cp -r -i'
+alias ll='ls -lahA -F -t --color=auto'
+alias ls='ls -F -t --color=auto'
+alias sl='ls'
+alias la='ls -A -F -t --color=auto'
+alias mv='mv -i -v'
+alias rm='rm -v -I'
+
+alias sudi='sudo '
+alias sudo='sudo '
+alias sudp='sudo '
+
+alias deb='dpkg -i'
+alias zip='zip -r'
+alias dir='dir --color=auto'
+alias mkdir='mkdir -pv'
+alias nano='nano -A -i -U -q -L'
+alias ping='ping -c 5'
+alias pstree='pstree -C age -h'
+alias py3='python3'
+alias shutdown='sudo shutdown now'
+alias hibernate='systemctl hibernate'
+alias storage="df / | awk 'END{print $5}'"

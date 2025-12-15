@@ -46,7 +46,7 @@ echo -e "Unzipping rockyou"
 
 echo -e "Setting simple tmux settings"
 # TMUX settings
-[ ! -f "$HOME/.tmux.conf" ] echo "set -g mouse on\n" >> "$HOME/.tmux.conf"
+[ ! -f "$HOME/.tmux.conf" ] && echo "set -g mouse on\n" >> "$HOME/.tmux.conf"
 
 echo -e "Finished"
 echo -e "Remember to update and upgrade"

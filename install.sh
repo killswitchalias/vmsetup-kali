@@ -55,7 +55,12 @@ if [ -f "/usr/share/wordlists/rockyou.txt.gz" ] && [ ! -f "/usr/share/wordlists/
     echo -e "Unzipping rockyou"
     sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 else
-    echo -e "Rockyou was already unzipped"
+    if [ ! -f "/usr/share/wordlists/rockyou.txt.gz" ]; then
+        echo -e "The file rockyou.txt.gz does not exist"
+    fi
+    if [ -f "/usr/share/wordlists/rockyou.txt" ]; then
+        echo -e "Rockyou was already unzipped"
+    fi 
 fi
 
 # TMUX settings
@@ -69,7 +74,7 @@ fi
 # SSH keygen
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     echo -e "Generating ssh-keys"
-    ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""
+    ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa -N ""
 else
     echo -e "SSH-keys detected in $HOME/.ssh/id_rsa"
 fi

@@ -32,8 +32,8 @@ sudo ln -s "${dir}/zsh/zsh_functions" "$HOME/.zsh_functions"
 backup_file "$HOME/.zsh_prompt_script"
 sudo ln -s "${dir}/zsh/zsh_prompt_script" "$HOME/.zsh_prompt_script"
 
-echo -e "Setting zsh as default shell"
-chsh -s /bin/zsh
+#echo -e "Setting zsh as default shell"
+#chsh -s /bin/zsh # Already is default shell.
 
 # Setting wallpaper for XFCE4
 echo -e "Setting up wallpaper"

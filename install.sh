@@ -10,8 +10,18 @@ fi
 
 dir="$(pwd)/vmsetup-kali"
 
-backup_file () { [ -z "$1" ] && return 1; local FILE="$1"; [ -f "$FILE" ] && mv "$FILE" "$FILE.bak"; }
+backup_file () {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+    local FILE="$1"
+    if [ -f "$FILE" ]; then
+        echo -e "Creating backup of original $FILE"
+        mv "$FILE" "$FILE.bak"
+    fi
+}
 
+# Fixing zsh with custom files
 echo -e "Moving zsh config files into place"
 backup_file "$HOME/.zshrc"
 sudo ln -s "${dir}/zsh/zshrc" "$HOME/.zshrc"
@@ -35,18 +45,34 @@ xrandr --listmonitors | awk '{print $4}' | tail -n $(( $( xrandr --listmonitors 
 done
 
 # Turning off screensaver and locking after time
-echo -e "Turning off screensaver and locking after time"
+echo -e "Turning off screensaver and locking after timeout"
 xfconf-query -c xfce4-screensaver -n -t bool -p /saver/enabled -s false
 #xfconf-query -c xfce4-screensaver -n -t bool -p /lock/enabled -s false
 xfconf-query -c xfce4-screensaver -p /lock/timeout -s 0 -n -t int
 
-echo -e "Unzipping rockyou"
 # Default position for rockyou in kali
-[ -f "/usr/share/wordlists/rockyou.txt.gz" ] && [ ! -f "/usr/share/wordlists/rockyou.txt" ] && sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+if [ -f "/usr/share/wordlists/rockyou.txt.gz" ] && [ ! -f "/usr/share/wordlists/rockyou.txt" ]; then
+    echo -e "Unzipping rockyou"
+    sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+else
+    echo -e "Rockyou was already unzipped"
+fi
 
-echo -e "Setting simple tmux settings"
 # TMUX settings
-[ ! -f "$HOME/.tmux.conf" ] && echo "set -g mouse on\n" >> "$HOME/.tmux.conf"
+if [ ! -f "$HOME/.tmux.conf" ]; then
+    echo -e "Setting simple tmux settings"
+    echo "set -g mouse on\n" >> "$HOME/.tmux.conf"
+else
+    echo -e "Tmux config detected in $HOME/.tmux.conf"
+fi
+
+# SSH keygen
+if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+    echo -e "Generating ssh-keys"
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""
+else
+    echo -e "SSH-keys detected in $HOME/.ssh/id_rsa"
+fi
 
 echo -e "Finished"
 echo -e "Remember to update and upgrade"

@@ -1,10 +1,10 @@
 #!/usr/bin/zsh
 
-echo "Cloning repo."
-git clone https://github.com/killswitchalias/vmsetup-kali.git
+echo -e "Cloning repo."
+git clone https://github.com/killswitchalias/vmsetup-kali.git 1>/dev/null
 
 if [ $? -ne 0 ]; then
-  echo "ERROR: Could not clone repo" >&2
+  echo -e "ERROR: Could not clone repo" >&2
   exit 1
 fi
 
@@ -66,7 +66,7 @@ fi
 # TMUX settings
 if [ ! -f "$HOME/.tmux.conf" ]; then
     echo -e "Setting simple tmux settings"
-    echo "set -g mouse on\n" >> "$HOME/.tmux.conf"
+    echo -e "set -g mouse on\n" >> "$HOME/.tmux.conf"
 else
     echo -e "Tmux config detected in $HOME/.tmux.conf"
 fi

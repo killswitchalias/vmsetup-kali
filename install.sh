@@ -74,7 +74,7 @@ fi
 # SSH keygen
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     echo -e "Generating ssh-keys"
-    ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa -N ""
+    ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa" -N ""
 else
     echo -e "SSH-keys detected in $HOME/.ssh/id_rsa"
 fi

@@ -20,7 +20,8 @@ if [ -n "$force_color_prompt" ]; then
 	fi
 fi
 parse_git_branch() {
-	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+	#git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+	git rev-parse --abbrev-ref HEAD 2>/dev/null
 }
 parse_shell_level() {
 	LIMIT=2
@@ -62,7 +63,56 @@ local PREFIX="
 		else
 			local PREFIX=" ── "
 		fi
-		GIT_SECTION="${PREFIX}git ${YELLOW}${GIT_BRANCH_STATUS}${NC}"
+
+		# Get counts
+        staged_count=$(git status --porcelain | grep -c '^[AMDRC] ')
+        unstaged_count=$(git status --porcelain | grep -c '^ M\|^ D')
+        untracked_count=$(git status --porcelain | grep -c '^??')
+        total_changes=$((staged_count + unstaged_count + untracked_count))
+
+        UP_TO_DATE_COLOR="${YELLOW}"
+
+        # Check if there are any changes to display
+        if [[ $total_changes -eq 0 ]]; then
+ 			if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then # If no file changes, check for status compared to origin
+                LOCAL_HASH=$(git rev-parse @)
+                REMOTE_HASH=$(git rev-parse @{u})
+
+                if [ "$LOCAL_HASH" = "$REMOTE_HASH" ]; then
+                    # Local and Remote hashes are the same
+                    UP_TO_DATE_COLOR="${GREEN}"
+                elif git merge-base --is-ancestor @{u} @; then
+                    # Remote is an ancestor of local (Local is ahead)
+                    UP_TO_DATE_COLOR="${YELLOW}"
+                elif git merge-base --is-ancestor @ @{u}; then
+                    # Local is an ancestor of remote (Local is behind)
+                    UP_TO_DATE_COLOR="${YELLOW}"
+                else
+                    # No direct ancestor relationship (Diverged/Need merge)
+                    UP_TO_DATE_COLOR="${RED}"
+                fi
+            else
+                # No remote tracking branch is set up (e.g., brand new branch)
+                UP_TO_DATE_COLOR="${BLUE}"
+            fi
+        fi
+	
+
+		GIT_SECTION="${PREFIX}git ${UP_TO_DATE_COLOR}(${GIT_BRANCH_STATUS}"
+
+        if [[ $total_changes -gt 0 ]]; then
+            # Build the status string: (branch-name S:1 U:2 ?:3)
+            if [[ $staged_count -gt 0 ]]; then
+                GIT_SECTION+=" ${GREEN}S:$staged_count"
+            fi
+            if [[ $unstaged_count -gt 0 ]]; then
+                GIT_SECTION+=" ${RED}U:$unstaged_count"
+            fi
+            if [[ $untracked_count -gt 0 ]]; then
+                GIT_SECTION+=" ${YELLOW}?:$untracked_count"
+            fi
+        fi
+        GIT_SECTION+="${UP_TO_DATE_COLOR})${NC}"
 	else
 		GIT_SECTION=""
 	fi

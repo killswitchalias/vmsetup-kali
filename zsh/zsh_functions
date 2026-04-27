@@ -69,6 +69,11 @@ sshinfo() {
 	 ss -tnp 'sport = :22 or dport = :22' | grep ESTAB | tr ',' ' ' | awk '{print $7" "$4" -> "$5}'
 }
 
+# Quickly jot down notes
+note() {
+	echo -e "\n$*" >> notes
+}
+
 # Change the new default dir
 changedir() {
 	local RCFILE="$HOME/.zshrc"

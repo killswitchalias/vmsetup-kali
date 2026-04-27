@@ -4,7 +4,7 @@
 alias aliases='nano ~/.zsh_aliases'
 alias zshrc='nano ~/.zshrc'
 
-alias c='clear'
+alias c='clear -x'
 alias q='exit'
 alias r='ranger'
 alias o='xdg-open'
@@ -35,3 +35,5 @@ alias shutdown='sudo shutdown now'
 alias history='history -E'
 alias hibernate='systemctl hibernate'
 alias storage="df / | awk 'END{print $5}'"
+alias notes="nano notes"
+alias hosts="sudo nano /etc/hosts"

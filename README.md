@@ -15,7 +15,7 @@ curl -L https://github.com/killswitchalias/vmsetup-kali/raw/main/install.sh | zs
  - Wallpaper
  - Stops xfce from falling asleep and locking
  - Unzips rockyou
- - Sets mouse in tmux
+ - Sets mouse settings, and logging in tmux
  - Generates ssh-keys
  
 ---------------------

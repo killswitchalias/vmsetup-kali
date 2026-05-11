@@ -64,12 +64,16 @@ else
 fi
 
 # TMUX settings
-if [ ! -f "$HOME/.tmux.conf" ]; then
-    echo -e "Setting simple tmux settings"
-    echo -e "set -g mouse on\n" >> "$HOME/.tmux.conf"
-else
-    echo -e "Tmux config detected in $HOME/.tmux.conf"
+  echo -e "Setting simple tmux settings"
+if [ -f "$HOME/.tmux.conf" ]; then
+    echo -e "Warning: Tmux config detected in $HOME/.tmux.conf"
 fi
+echo -e "set -g mouse on\n" >> "$HOME/.tmux.conf"
+mkdir -p ~/logs
+tmuxLogCommand="'pipe-pane -o \"stdbuf -oL cat >> ~/logs/tmux-\$(date +%Y-%m-%d)_\$(date +%H:%M:%S)_S#{session_name}_W#{window_index}_P#{pane_index}.log\"'"
+echo -e "set-hook -g pane-focus-in ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
+echo -e "set-hook -g after-new-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
+echo -e "set-hook -g after-split-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
 
 # SSH keygen
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then

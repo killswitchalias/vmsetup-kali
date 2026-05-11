@@ -103,3 +103,35 @@ changedir() {
         echo "Error: Failed to update $RCFILE. Please check the file contents and permissions."
     fi
 }
+
+logs() {
+        local logdir="$HOME/logs/"
+        local logfile="$1"
+        if [[ -n "$logfile" ]]; then
+                if [[ -f "${logdir}${logfile}"  ]]; then
+                        #local filter="s/\x1b\[[0-9;]*[HJ]/\n\n--- [REFRESH] ---\n\n/g; s/\x1b\[[0-9;]*K//g; s/\x0c/\n\n/g"
+                        local filter="s/\x1b\[[0-9;]*[HJ]/\n/g; s/\x1b\[[0-9;]*K//g; s/\x0c/\n\n/g"
+                        local backspace=':a; s/([^\x08])(\x1b\[[0-9;]*m)?\x08/\2/g; ta'
+                        local dedup='s/(\x1b\[[0-9;]*m)\1/\1/g'
+                        sed -E -e "$filter" -e "$backspace" -e "$dedup" "${logdir}${logfile}" | uniq | less -R
+                else
+                        echo -e "Error: ${logfile} not found."
+                fi
+        else
+                echo -e "Available logs in ${logdir}:"
+                ls -1 "$logdir" 2>/dev/null
+        fi
+}
+
+_logs_completion() {
+        local logdir="$HOME/logs/"
+        # Generate list of files in the log directory
+        local -a files
+        files=($logdir*(N:t)) # (N:t) gets the basename/tail and ignores null matches
+
+        #_describe 'logfile' files
+        compadd -f -Q -- $files
+}
+compdef _logs_completion logs
+
+

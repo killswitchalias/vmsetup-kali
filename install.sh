@@ -74,6 +74,7 @@ tmuxLogCommand="'pipe-pane -o \"stdbuf -oL cat >> ~/logs/tmux-\$(date +%Y-%m-%d)
 echo -e "set-hook -g pane-focus-in ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
 echo -e "set-hook -g after-new-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
 echo -e "set-hook -g after-split-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
+echo -e "set-option -g history-limit 50000\n" >> "$HOME/.tmux.conf"
 
 # SSH keygen
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then

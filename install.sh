@@ -40,8 +40,8 @@ echo -e "Setting up wallpaper"
 backup_file "$HOME/Pictures/wp.jpg"
 sudo ln -s "${dir}/style/wp.jpg" "$HOME/Pictures/wp.jpg"
 
-xrandr --listmonitors | awk '{print $4}' | tail -n $(( $( xrandr --listmonitors | wc -l ) - 1 )) | while read monitor; do
-    xfconf-query --channel xfce4-desktop --property /backdrop/screen0/monitor"$monitor"/workspace0/last-image -n -t string -s "$HOME/Pictures/wp.jpg"
+xfconf-query -c xfce4-desktop -l | grep last-image | while read monitor; do
+    xfconf-query --channel xfce4-desktop --property "$monitor" -n -t string -s "$HOME/Pictures/wp.jpg"
 done
 
 # Turning off screensaver and locking after time
@@ -60,7 +60,7 @@ else
     fi
     if [ -f "/usr/share/wordlists/rockyou.txt" ]; then
         echo -e "Rockyou was already unzipped"
-    fi 
+    fi
 fi
 
 # TMUX settings
@@ -83,6 +83,10 @@ if [ ! -f "$HOME/.ssh/id_rsa" ]; then
 else
     echo -e "SSH-keys detected in $HOME/.ssh/id_rsa"
 fi
+
+# Tools
+echo -e "Setting up tools"
+bash "${dir}/tools/install.sh"
 
 echo -e "Finished"
 echo -e "Remember to update and upgrade"

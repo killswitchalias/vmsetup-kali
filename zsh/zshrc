@@ -180,7 +180,7 @@ export DISPLAY=:0
 if [ 1 ]; then
 # Turns on numlock
 #setleds -D +num
-numlockx on
+#numlockx on
 
 # Set language keyboard mapping
 setxkbmap no

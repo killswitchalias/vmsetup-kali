@@ -76,6 +76,11 @@ echo -e "set-hook -g after-new-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
 echo -e "set-hook -g after-split-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.conf"
 echo -e "set-option -g history-limit 50000\n" >> "$HOME/.tmux.conf"
 
+# NANO conf
+echo -e "set tabsize 4\n" >> "$HOME/.nanorc"
+echo -e "set tabstospaces\n" >> "$HOME/.nanorc"
+
+
 # SSH keygen
 if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     echo -e "Generating ssh-keys"

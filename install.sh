@@ -77,6 +77,7 @@ echo -e "set-hook -g after-split-window ${tmuxLogCommand}\n" >> "$HOME/.tmux.con
 echo -e "set-option -g history-limit 50000\n" >> "$HOME/.tmux.conf"
 
 # NANO conf
+echo -e "Setting simple nano settings"
 echo -e "set tabsize 4\n" >> "$HOME/.nanorc"
 echo -e "set tabstospaces\n" >> "$HOME/.nanorc"
 
@@ -90,8 +91,11 @@ else
 fi
 
 # Tools
+toolsdir="${dir}/tools"
+cd "$toolsdir"
 echo -e "Setting up tools"
-bash "${dir}/tools/install.sh"
+bash "${toolsdir}/install.sh"
+cd "$dir"
 
 echo -e "Finished"
 echo -e "Remember to update and upgrade"

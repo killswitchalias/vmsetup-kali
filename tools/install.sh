@@ -19,4 +19,4 @@ chmod +x "${CYBERCHEFBIN}/cyberchef"
 cd - >/dev/null
 ln -s "${CYBERCHEFBIN}/cyberchef" cyberchef
 chmod +x cyberchef
-echo "See 'cyberchef' executable in cwd"
+echo "See 'cyberchef' executable in $(pwd)"
